@@ -62,7 +62,8 @@ def write_rows_to_excel(rows, output_file):
     print(f"✅ Excel file saved as: {output_file}")
 
 # === CONFIGURATION ===
-docx_file = "docx_ex.docx"                # Replace with your actual DOCX filename
+#docx_file = "docx_ex.docx"                # Replace with your actual DOCX filename
+docx_file = "Macaron - Plan détaillé.docx"
 excel_file = "structured_output.xlsx"     # Final Excel output
 
 # === RUN PIPELINE ===
