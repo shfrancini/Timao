@@ -1,1 +1,49 @@
+# macOS system files
 .DS_Store
+
+# Office temporary files (Word, Excel, etc.)
+~$*
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+.env/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE or Editor folders and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary text or output files
+intermediate_output.txt
+
+# Excel temporary backup files
+~$*.xlsx
+
+# Miscellaneous
+*.swp
+*.swo
