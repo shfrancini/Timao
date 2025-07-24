@@ -38,7 +38,6 @@ def main(input_xlsx, output_docx):
     previous_path = []
 
     for row in rows:
-        # Skip rows without CCTP content
         if cctp_col is None or not row[cctp_col]:
             continue
 
@@ -53,7 +52,17 @@ def main(input_xlsx, output_docx):
             numbered_title = f"{format_numbering_path(numbering_path[:level])} {label}"
             doc.add_heading(numbered_title, level=level)
 
-        # Add GPT responses under each CCTP
+        # Add CCTP content before GPT responses
+        cctp_text = str(row[cctp_col]).strip()
+        if cctp_text:
+            doc.add_paragraph("**CCTP**", style="Intense Quote")
+            para = doc.add_paragraph(cctp_text)
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+            run = para.runs[0]
+            run.font.name = 'Arial'
+            run.font.size = Pt(11)
+
+        # Add GPT responses
         for gpt_col in gpt_cols:
             value = row[headers.index(gpt_col)]
             if value and str(value).strip():
