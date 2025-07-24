@@ -4,6 +4,35 @@ Ce dépôt contient des scripts et instructions pour convertir des fichiers Word
 
 ---
 
+## ✅ Step-by-Step Setup / Étapes de configuration
+
+### 1. 🔁 Clone the repository / Cloner le dépôt
+```bash
+git clone https://github.com/shfrancini/Timao.git
+cd Timao
+```
+
+### 2. 🐳 Install Docker / Installer Docker
+- Download and install Docker from: https://www.docker.com/products/docker-desktop/
+
+### 3. 🚦 Run n8n locally / Exécuter n8n en local
+```bash
+docker run -it --rm \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n
+```
+Open [http://localhost:5678](http://localhost:5678) in your browser.
+
+Import the workflow from `tests/My workflow.json` and ensure your OpenAI credentials are set inside n8n.
+
+### 4. 📦 Install Python dependencies / Installer les dépendances Python
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## 🧱 Folder Structure / Structure des dossiers
 
 ```
@@ -18,6 +47,7 @@ Timao/
 ├── files/
 │   ├── source_input.docx       # Original input file, with numbered hierarchy
 │   ├── output.xlsx             # XLSX generated from DOCX (not enriched)
+│   ├── enriched_output.xlsx    # XLSX enriched with GPT outputs
 │   ├── final_output_test.docx  # Final DOCX output (with GPT content)
 │   └── ...
 ├── tests/                      # Sample files for manual or automated testing
@@ -38,8 +68,8 @@ Timao/
 
    ```bash
    docker run --rm \
-     -v ~/Projects/Timao/scripts:/data/scripts \
-     -v ~/Projects/Timao/files:/data/files \
+     -v $(pwd)/scripts:/data/scripts \
+     -v $(pwd)/files:/data/files \
      python:3.10 \
      /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
                    python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
@@ -49,41 +79,24 @@ Timao/
 
 3. **Enrich `output.xlsx` using n8n**.
    - This process adds GPT outputs (columns like `gpt_summary`, `gpt_keywords`, etc.).
-   - Save the enriched file as a **new Excel file** (e.g., `enriched_output.xlsx`).
+   - Save the enriched file as `enriched_output.xlsx`.
 
    **Enrichissez `output.xlsx` avec n8n**.
    - Ce processus ajoute les réponses GPT.
-   - Sauvegardez le fichier enrichi sous un **nouveau nom** (ex : `enriched_output.xlsx`).
+   - Sauvegardez le fichier enrichi sous `enriched_output.xlsx`.
 
 4. **Convert back to DOCX** using the script `scripts/xlsx_to_docx.py`:
 
    ```bash
    docker run --rm \
-     -v ~/Projects/Timao/scripts:/data/scripts \
-     -v ~/Projects/Timao/files:/data/files \
+     -v $(pwd)/scripts:/data/scripts \
+     -v $(pwd)/files:/data/files \
      python:3.10 \
      /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
                    python3 /data/scripts/xlsx_to_docx.py /data/files/enriched_output.xlsx /data/files/final_output_test.docx"
    ```
 
    **Convertissez à nouveau en DOCX** avec le script `scripts/xlsx_to_docx.py`
-
----
-
-## 🖥️ Running n8n locally / Exécuter n8n en local
-
-Install Docker and run n8n:
-
-```bash
-docker run -it --rm \
-  -p 5678:5678 \
-  -v ~/.n8n:/home/node/.n8n \
-  n8nio/n8n
-```
-
-Open [http://localhost:5678](http://localhost:5678) in your browser.
-
-Import your workflows (from `tests/` or create new ones) to process the Excel files with GPT.
 
 ---
 
