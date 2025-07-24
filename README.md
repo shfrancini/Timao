@@ -24,9 +24,20 @@ If you don’t have Git:
 3. Choose **"Download ZIP"**
 4. Extract the ZIP and open the `Timao` folder
 
-### 2. 🐳 Install Docker / Installer Docker
-Download Docker Desktop: https://www.docker.com/products/docker-desktop  
-Téléchargez et installez Docker Desktop, puis ouvrez-le.
+### 2. 🐳 Install Docker & Create Account / Installer Docker et créer un compte
+
+#### Step 1 – Install Docker Desktop / Installer Docker Desktop
+Download and install Docker Desktop:  
+Téléchargez et installez Docker Desktop :  
+👉 https://www.docker.com/products/docker-desktop
+
+#### Step 2 – Create a Docker account / Créer un compte Docker
+Before running any Docker commands, you must **create a free Docker account**:  
+Avant d'exécuter des commandes Docker, vous devez **créer un compte Docker gratuit** :  
+👉 https://hub.docker.com/signup
+
+Once your account is created and Docker is running, continue with the next steps.  
+Une fois votre compte créé et Docker lancé, poursuivez les étapes suivantes.
 
 ### 3. 🚀 Launch n8n locally / Lancer n8n en local
 Open your terminal or command prompt and run:
@@ -40,6 +51,9 @@ docker run -it --rm \
 
 Open your browser and go to http://localhost:5678  
 Ouvrez votre navigateur et allez à l’adresse http://localhost:5678
+
+Sign in / create an n8n account.
+Connectez-vous / créez un compte n8n.
 
 ### 4. 📥 Import the n8n workflow / Importer le workflow n8n
 - In the n8n interface → click “Workflows” → “Import from file”
