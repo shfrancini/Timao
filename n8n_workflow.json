@@ -6,7 +6,7 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1100,
+        -960,
         400
       ],
       "id": "f6b7b963-6065-42f6-8151-73f9e1110816",
@@ -27,23 +27,6 @@
       "name": "Extract from File",
       "executeOnce": false,
       "alwaysOutputData": false
-    },
-    {
-      "parameters": {
-        "fileSelector": "/Projects/Timao/files/input.docx",
-        "options": {
-          "dataPropertyName": "data"
-        }
-      },
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        -720,
-        400
-      ],
-      "id": "d7236d78-9b0e-411d-aeab-ccfc97ccfc10",
-      "name": "Read/Write Files from Disk1",
-      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -73,7 +56,7 @@
     },
     {
       "parameters": {
-        "fileName": "output_with_gpt_steps.xlsx",
+        "fileName": "output_with_gpt.xlsx",
         "options": {}
       },
       "name": "Write Excel Output",
@@ -87,7 +70,7 @@
     },
     {
       "parameters": {
-        "command": "python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
+        "command": "python3 /data/scripts/docx_to_xlsx.py /data/files/input.docx /data/files/int_output.xlsx"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -100,7 +83,7 @@
     },
     {
       "parameters": {
-        "fileSelector": "/data/files/output.xlsx",
+        "fileSelector": "/data/files/int_output.xlsx",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -695,7 +678,7 @@
     },
     {
       "parameters": {
-        "command": "python3 /data/scripts/xlsx_to_docx.py /data/files/File.xlsx /data/files/output.docx"
+        "command": "python3 /data/scripts/xlsx_to_docx.py /data/files/File.xlsx /data/files/gpt_output.docx"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -709,7 +692,7 @@
     {
       "parameters": {
         "operation": "write",
-        "fileName": "/data/files/File.xlsx",
+        "fileName": "/data/files/gpt_output.xlsx",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -765,17 +748,6 @@
       ]
     },
     "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Read/Write Files from Disk1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read/Write Files from Disk1": {
       "main": [
         [
           {
@@ -985,7 +957,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b12daecf-9908-41bd-b688-efcc57205aeb",
+  "versionId": "363d3026-7187-4b58-a51e-ed3d7e37f807",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b047e595e520b0241af595aa79dfdc28f73c2e460bae51fcf2cc2606eb6fdc0f"
