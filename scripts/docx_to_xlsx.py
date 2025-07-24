@@ -1,4 +1,5 @@
 import openpyxl
+import sys
 from docx import Document
 
 def extract_numbered_hierarchy_and_cctp(docx_path):
@@ -88,11 +89,16 @@ def write_rows_with_cctp_to_excel(rows, output_file):
     wb.save(output_file)
     print(f"✅ Excel file saved as: {output_file}")
 
-# === CONFIGURATION ===
-docx_file = "Macaron - Plan detaille.docx"
-excel_file = "structured_output_with_cctp.xlsx"
 
-# === RUN PIPELINE ===
-rows = extract_numbered_hierarchy_and_cctp(docx_file)
-leaf_rows = filter_leaf_paths_with_cctp(rows)
-write_rows_with_cctp_to_excel(leaf_rows, excel_file)
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("❌ Usage: python3 docx_to_xlsx.py <input.docx> <output.xlsx>")
+        sys.exit(1)
+
+    docx_file = sys.argv[1]
+    excel_file = sys.argv[2]
+
+    rows = extract_numbered_hierarchy_and_cctp(docx_file)
+    leaf_rows = filter_leaf_paths_with_cctp(rows)
+    write_rows_with_cctp_to_excel(leaf_rows, excel_file)
+

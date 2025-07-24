@@ -1,0 +1,122 @@
+{
+  "name": "DOCX to XLSX via Python",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-docx",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "binary",
+        "options": {}
+      },
+      "name": "Move Binary Data",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "/data/files/input.docx",
+        "dataPropertyName": "file"
+      },
+      "name": "Write Binary File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /data/scripts/convert_docx_to_xlsx.py /data/files/input.docx /data/files/output.xlsx"
+      },
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "/data/files/output.xlsx",
+        "options": {},
+        "binaryPropertyName": "converted_file"
+      },
+      "name": "Read Binary File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extract",
+        "binaryPropertyName": "converted_file"
+      },
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": [
+      {
+        "node": "Move Binary Data",
+        "type": "main",
+        "index": 0
+      }
+    ],
+    "Move Binary Data": [
+      {
+        "node": "Write Binary File",
+        "type": "main",
+        "index": 0
+      }
+    ],
+    "Write Binary File": [
+      {
+        "node": "Execute Command",
+        "type": "main",
+        "index": 0
+      }
+    ],
+    "Execute Command": [
+      {
+        "node": "Read Binary File",
+        "type": "main",
+        "index": 0
+      }
+    ],
+    "Read Binary File": [
+      {
+        "node": "Extract from File",
+        "type": "main",
+        "index": 0
+      }
+    ]
+  }
+}

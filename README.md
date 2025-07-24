@@ -1,35 +1,23 @@
-# Timao DOCX to Excel Hierarchy Extractor
-
-This project extracts numbered hierarchical outlines from DOCX documents and exports them as structured Excel files. It also supports capturing associated blocks of descriptive text (CCTP) following each leaf node in the hierarchy.
-
----
-
-## Features
-
-- **Extract numbered outlines** (e.g., 1., 1.1, 1.1.1) from DOCX files.
-- **Build full hierarchical paths** for numbered paragraphs.
-- **Identify and filter leaf nodes** (those without sub-items).
-- **Extract associated descriptive text blocks (CCTP)** immediately following leaf nodes.
-- **Export hierarchical data and CCTP content to Excel**, with each hierarchy level in separate columns plus a dedicated CCTP column.
-- Ignores unnecessary system and temporary files via `.gitignore`.
-
----
-
-## Project Structure
-
-- `Macaron - Plan detaille.docx` — Sample DOCX input file with numbered outline.
-- Python scripts (e.g., `test_docx_to_excel.py`) — Main code for extracting hierarchy and exporting Excel.
-- Excel output files (`*.xlsx`) — Various output files showing hierarchical exports, including:
-  - `structured_output_with_cctp.xlsx` — Hierarchy plus CCTP text.
-  - Other intermediate or filtered output Excel files.
-- `.gitignore` — Configured to exclude system files (`.DS_Store`), temporary Office files (`~$*`), Python cache, and other common ignored files.
-- `requirements.txt` — Python dependencies (e.g., `python-docx`, `openpyxl`).
-
----
-
+# Timao AI Automation Project
+This repo is part of an automation pipeline using n8n to orchestrate AI-powered workflows, focusing on document processing and data extraction.
+## Project Overview
+- **n8n workflows** automate AI tasks and data pipelines.
+- **DOCX to Excel extraction** parses Word files to get numbered outlines and related descriptive text.
+- Outputs structured Excel files for further AI processing.
+- Additional AI and automation modules are planned.
+## Repo Contents
+- `test_docx_to_excel.py`: Extracts hierarchical numbered outlines and CCTP text from DOCX files.
+- Sample DOCX and Excel output files.
+- `.gitignore` to exclude temp/system files.
+- `requirements.txt` for Python dependencies.
+- `My workflow.json`: n8n workflow (in development).
 ## Usage
-
-1. **Install dependencies:**
-
-   ```bash
-   pip install -r requirements.txt
+1. Install dependencies by running: `pip install -r requirements.txt`
+2. Run extraction script: `python test_docx_to_excel.py`
+3. Use generated Excel files in the n8n pipeline.
+## Next Steps
+- Finish n8n workflow integration.
+- Add AI modules for analysis and automation.
+- Improve error handling and pipeline stability.
+## Contact
+Maintained by Scarlett Francini.
