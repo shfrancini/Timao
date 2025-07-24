@@ -1,161 +1,164 @@
-# Timao N8N Document Conversion Pipeline
+Timao N8N Document Conversion Pipeline
+Pipeline de conversion de documents avec N8N pour Timao
+
+This repository contains scripts and instructions to convert structured Word files (.docx) into Excel (.xlsx), enrich them using n8n and GPT, then reconvert them into a properly formatted .docx document.
 
 Ce dépôt contient des scripts et instructions pour convertir des fichiers Word structurés (.docx) en Excel (.xlsx), les enrichir avec n8n et GPT, puis les reconvertir en document .docx correctement formaté.
 
----
+============================
+✅ Full Setup from Scratch / Configuration complète depuis zéro
+============================
 
-## ✅ Step-by-Step Setup / Étapes de configuration
+1. Clone the repository / Cloner le dépôt
 
-### 1. 🔁 Clone the repository / Cloner le dépôt
-```bash
 git clone https://github.com/shfrancini/Timao.git
 cd Timao
-```
 
-### 2. 🐳 Install Docker / Installer Docker
-- Download and install Docker from: https://www.docker.com/products/docker-desktop/
+2. Install Docker / Installer Docker
 
-### 3. 🚦 Run n8n locally / Exécuter n8n en local
-```bash
+Download Docker Desktop: https://www.docker.com/products/docker-desktop
+Téléchargez et installez Docker Desktop puis lancez-le.
+
+3. Run n8n locally / Lancer n8n en local
+
 docker run -it --rm \
   -p 5678:5678 \
   -v ~/.n8n:/home/node/.n8n \
   n8nio/n8n
-```
-Open [http://localhost:5678](http://localhost:5678) in your browser.
 
-Import the workflow from `tests/My workflow.json` and ensure your OpenAI credentials are set inside n8n.
+Open your browser at: http://localhost:5678
+Ouvrez votre navigateur à l’adresse : http://localhost:5678
 
-### 4. 📦 Install Python dependencies / Installer les dépendances Python
-```bash
+4. Import the n8n workflow / Importer le workflow n8n
+
+Go to the n8n UI → "Workflows" → "Import from file"
+Aller dans l’interface n8n → "Workflows" → "Import from file"
+
+Import: tests/My workflow.json  
+Importer : tests/My workflow.json
+
+Set credentials (OpenAI, Pinecone, Google Drive) in the Credentials section.  
+Configurer vos identifiants (OpenAI, Pinecone, Google Drive) dans la section "Credentials".
+
+5. Install Python dependencies / Installer les dépendances Python
+
 pip install -r requirements.txt
-```
 
----
+(Or use Docker as described below / ou utilisez directement Docker comme ci-dessous)
 
-## 🧱 Folder Structure / Structure des dossiers
+=======================
+🧱 Folder Structure / Structure des dossiers
+=======================
 
-```
 Timao/
 ├── Dockerfile
 ├── README.md
 ├── requirements.txt
 ├── recherches.py
 ├── scripts/
-│   ├── docx_to_xlsx.py         # Converts DOCX to structured XLSX
-│   └── xlsx_to_docx.py         # Converts enriched XLSX back to DOCX
+│   ├── docx_to_xlsx.py
+│   └── xlsx_to_docx.py
 ├── files/
-│   ├── source_input.docx       # Original input file, with numbered hierarchy
-│   ├── output.xlsx             # XLSX generated from DOCX (not enriched)
-│   ├── enriched_output.xlsx    # XLSX enriched with GPT outputs
-│   ├── final_output_test.docx  # Final DOCX output (with GPT content)
-│   └── ...
-├── tests/                      # Sample files for manual or automated testing
-└── ...
-```
+│   ├── source_input.docx
+│   ├── output.xlsx
+│   ├── enriched_output.xlsx
+│   ├── final_output_test.docx
+├── tests/
+│   └── My workflow.json
 
----
+==============================
+🗐 Usage Process / Processus d'utilisation
+==============================
 
-## 🧭 Workflow Overview / Vue d'ensemble du processus
+1. Place your DOCX source file in files/  
+   Placez votre fichier Word source dans le dossier files/
 
-1. **Start with** a `.docx` file that uses numbered headings (e.g., 1, 1.1, 1.1.1, etc.).
-   - Place this in `files/` and name it: `source_input.docx`
+- The document must use numbered heading levels: 1, 1.1, 1.1.1  
+- Le fichier doit contenir des titres hiérarchiques numérotés : 1, 1.1, 1.1.1
 
-   **Commencez avec** un fichier `.docx` structuré avec des titres numérotés.
-   - Placez-le dans `files/` sous le nom `source_input.docx`
+- Expected filename: source_input.docx  
+- Nom attendu : source_input.docx
 
-2. **Convert to Excel** using the script `scripts/docx_to_xlsx.py`:
+2. Convert DOCX to XLSX / Conversion DOCX → XLSX
 
-   ```bash
-   docker run --rm \
-     -v $(pwd)/scripts:/data/scripts \
-     -v $(pwd)/files:/data/files \
-     python:3.10 \
-     /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
-                   python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
-   ```
+docker run --rm \
+  -v $(pwd)/scripts:/data/scripts \
+  -v $(pwd)/files:/data/files \
+  python:3.10 \
+  /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
+                python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
 
-   **Convertissez en Excel** avec le script `scripts/docx_to_xlsx.py`
+3. Enrich via n8n / Enrichissement via n8n
 
-3. **Enrich `output.xlsx` using n8n**.
-   - This process adds GPT outputs (columns like `gpt_summary`, `gpt_keywords`, etc.).
-   - Save the enriched file as `enriched_output.xlsx`.
+- The file output.xlsx is used as input in n8n  
+- Le fichier output.xlsx est lu dans le workflow n8n
 
-   **Enrichissez `output.xlsx` avec n8n**.
-   - Ce processus ajoute les réponses GPT.
-   - Sauvegardez le fichier enrichi sous `enriched_output.xlsx`.
+- GPT responses are added to columns like gpt_summary, gpt_keywords, etc.  
+- Les réponses GPT sont ajoutées dans les colonnes gpt_summary, gpt_keywords, etc.
 
-4. **Convert back to DOCX** using the script `scripts/xlsx_to_docx.py`:
+- Save the output as enriched_output.xlsx  
+- Sauvegardez sous enriched_output.xlsx
 
-   ```bash
-   docker run --rm \
-     -v $(pwd)/scripts:/data/scripts \
-     -v $(pwd)/files:/data/files \
-     python:3.10 \
-     /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
-                   python3 /data/scripts/xlsx_to_docx.py /data/files/enriched_output.xlsx /data/files/final_output_test.docx"
-   ```
+4. Convert enriched XLSX back to DOCX / Conversion XLSX enrichi → DOCX
 
-   **Convertissez à nouveau en DOCX** avec le script `scripts/xlsx_to_docx.py`
+docker run --rm \
+  -v $(pwd)/scripts:/data/scripts \
+  -v $(pwd)/files:/data/files \
+  python:3.10 \
+  /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
+                python3 /data/scripts/xlsx_to_docx.py /data/files/enriched_output.xlsx /data/files/final_output_test.docx"
 
----
+========================
+🔧 Python Dependencies / Dépendances Python
+========================
 
-## 🔧 Required Python Packages / Dépendances Python
-
-```
-openpyxl
+openpyxl  
 python-docx
-```
 
-To manually install:
-```bash
 pip install -r requirements.txt
-```
 
-Pour une installation manuelle :
-```bash
-pip install -r requirements.txt
-```
+===================================
+🧠 GPT Prompt & Output Customization
+Personnalisation des réponses GPT
+===================================
 
----
+A. Modify GPT prompt in n8n / Modifier le prompt GPT dans n8n
 
-## 🧠 GPT Agent Customization / Personnalisation des réponses GPT
-
-To change how GPT responses appear:
-
-### 🔧 Modify the GPT prompt in your assistant (n8n):
-
-```text
+Example / Exemple :
 Format your response with:
 - A bold heading
 - Bulleted list
 - Formal tone
-```
 
-Change to use numbered list, markdown, etc.
+B. Customize output formatting in xlsx_to_docx.py  
+   Personnalisez le style de sortie dans le script xlsx_to_docx.py
 
-### 🎨 Modify output formatting in `xlsx_to_docx.py`:
-
-```python
-run.font.bold = True
+run.font.bold = True  
 run.font.size = Pt(11)
-```
 
----
+====================================
+📌 File Summary / Récapitulatif des fichiers
+====================================
 
-## 📌 Notes
+File / Fichier              | Role / Rôle
+--------------------------- | ------------------------------------------
+source_input.docx           | Original Word input / Fichier Word source
+output.xlsx                 | Raw extracted content / Version brute Excel
+enriched_output.xlsx        | With GPT responses / Version enrichie avec GPT
+final_output_test.docx      | Final output / Résultat final Word
 
-- Only rows with `CCTP` content are processed.
-- Numbering is reconstructed from the logical heading levels in the original DOCX.
-- GPT responses are inserted below each `CCTP` item.
+=====================================
+🔹 Notes
+=====================================
 
----
+- Only rows with CCTP content are processed  
+- Seuls les blocs contenant du contenu CCTP sont traités
 
-## 💡 Example File Flow / Exemple de chemin de fichiers
+- Numbering is reconstructed from the original structure  
+- La numérotation est reconstruite automatiquement
 
-| File                     | Purpose                                        | Utilité                               |
-|--------------------------|------------------------------------------------|----------------------------------------|
-| `source_input.docx`      | Original input with numbered structure         | Fichier source                         |
-| `output.xlsx`            | Raw DOCX → XLSX conversion (not enriched)      | Conversion Excel (non enrichi)        |
-| `enriched_output.xlsx`   | Enriched version with GPT via n8n              | Version enrichie avec GPT             |
-| `final_output_test.docx` | Final output after reintegration               | Résultat final                         |
+- If the file names and folder structure are preserved, the whole pipeline is replicable  
+- Le processus est réplicable si le nom des fichiers et la structure sont respectés
+
+For questions or contributions, contact the Timao team.  
+Pour toute contribution ou question, contactez l’équipe Timao.

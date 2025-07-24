@@ -1,0 +1,995 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        400
+      ],
+      "id": "f6b7b963-6065-42f6-8151-73f9e1110816",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        120,
+        400
+      ],
+      "id": "af3bd984-0ec4-4237-94f5-ba2d7f86a28a",
+      "name": "Extract from File",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "fileSelector": "/Projects/Timao/files/input.docx",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        400
+      ],
+      "id": "d7236d78-9b0e-411d-aeab-ccfc97ccfc10",
+      "name": "Read/Write Files from Disk1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        420,
+        400
+      ],
+      "id": "26dae03b-4768-4600-9502-521b77baae58",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map((entry, index) => {\n  const item = entry.json;\n  const columns = Object.keys(item);\n\n  let cctp = (item['CCTP'] || '').trim();\n  let leafKey = 'CCTP';\n  let hasCCTP = false;\n\n  if (cctp) {\n    hasCCTP = true;\n  } else {\n    const fallbackKey = columns.findLast(key =>\n      typeof item[key] === 'string' && item[key].trim().length > 0\n    );\n\n    if (fallbackKey !== undefined) {\n      cctp = item[fallbackKey].trim();\n      leafKey = fallbackKey;\n    } else {\n      cctp = '';\n      leafKey = '';\n    }\n  }\n\n  const contextParts = columns\n    .filter(k => k !== leafKey)\n    .map(k => typeof item[k] === 'string' ? item[k].trim() : '')\n    .filter(Boolean);\n\n  const context = contextParts.join(' > ');\n  const prompt = `Context: ${context}\\n\\nCCTP Content:\\n${cctp}\\n\\nPlease analyze this section and provide your output.`;\n\n  return {\n    json: {\n      ...item,\n      context,\n      prompt,\n      leafKey,\n      hasCCTP,\n      // If you want $runIndex in an expression, it’s outside the Code node. \n      // Inside Code node: use index from map like here:\n      rowIndex: $runIndex\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        420
+      ],
+      "id": "cd575a12-8079-4f6a-b901-61285a2d2db4",
+      "name": "Loop through Rows,"
+    },
+    {
+      "parameters": {
+        "fileName": "output_with_gpt_steps.xlsx",
+        "options": {}
+      },
+      "name": "Write Excel Output",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        -200
+      ],
+      "id": "0152f906-9146-4463-9b36-8d7b91a3906e"
+    },
+    {
+      "parameters": {
+        "command": "python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        400
+      ],
+      "id": "84a90adb-7cb3-4836-b34f-d05af226d35f",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/files/output.xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        400
+      ],
+      "id": "a685055d-5086-4a3d-b570-e07f591e304b",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2c2be77c-c501-4b0b-ac96-b7b4d680f19e",
+              "leftValue": "={{ $json.hasCCTP }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1260,
+        420
+      ],
+      "id": "43fc4b18-620a-4408-8fce-3beb99cec70b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffa9fefa-255f-4f56-aaaf-07f08177eed4",
+              "name": "H1",
+              "value": "={{ $json.H1 }}",
+              "type": "string"
+            },
+            {
+              "id": "1b55ed1e-4d09-4e62-a493-6ba97baf8c59",
+              "name": "H2",
+              "value": "={{ $json.H2 }}",
+              "type": "string"
+            },
+            {
+              "id": "bcfb55b4-54f9-40b4-998b-1551874db1d0",
+              "name": "H3",
+              "value": "={{ $json.H3 }}",
+              "type": "string"
+            },
+            {
+              "id": "4c1848b7-4789-452e-9269-e98d22b4e5e0",
+              "name": "H4",
+              "value": "={{ $json.H4 }}",
+              "type": "string"
+            },
+            {
+              "id": "e3d78aa6-f772-486d-8c40-417bca35fd75",
+              "name": "H5",
+              "value": "={{ $json.H5 }}",
+              "type": "string"
+            },
+            {
+              "id": "5e0e3332-39e6-4e54-b6fa-26d9631518d9",
+              "name": "H6",
+              "value": "={{ $json.H6 }}",
+              "type": "string"
+            },
+            {
+              "id": "96141cda-025a-42f9-96da-7f27abd30ab1",
+              "name": "CCTP",
+              "value": "={{ $json.CCTP }}",
+              "type": "string"
+            },
+            {
+              "id": "87e002f3-4492-4ce4-947c-2292feaf29da",
+              "name": "context",
+              "value": "={{ $json.context }}",
+              "type": "string"
+            },
+            {
+              "id": "59cb1f54-cc5e-4da5-9061-59e0cc71825d",
+              "name": "prompt",
+              "value": "={{ $json.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "b5804de6-508a-445e-83b6-f23c3eaff568",
+              "name": "leafKey",
+              "value": "={{ $json.leafKey }}",
+              "type": "string"
+            },
+            {
+              "id": "efe567a0-fba9-41b9-a539-ba612cbd643f",
+              "name": "hasCCTP",
+              "value": "={{ $json.hasCCTP }}",
+              "type": "string"
+            },
+            {
+              "id": "3cbf1567-7249-480d-8048-a6e324bfcdbe",
+              "name": "rowIndex",
+              "value": "={{ $json.rowIndex }}",
+              "type": "string"
+            },
+            {
+              "id": "18428ec3-3503-4a18-a801-1c42fd6ecc7e",
+              "name": "gpt1_response",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "900a75d3-a5da-43b2-8c7c-b7e1d48a410e",
+              "name": "threadId1",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "60f0bf8e-737c-4679-aee9-1ff97ed4fba5",
+              "name": "gpt2_response",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "4fbadc73-fbc3-4863-a52b-af4c1c8517c3",
+              "name": "threadId2",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "6b4f7dce-0310-4549-ad62-b3714ceff610",
+              "name": "gpt3_response",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "92e0dfb4-3a14-49be-adb9-8f763d29c051",
+              "name": "threadId3",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "86ed4c53-7728-4c0d-8657-42a7788dbede",
+              "name": "gpt4_response",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "6d2e0e84-417f-418a-a5b7-ee243dfd10a1",
+              "name": "threadId4",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "220d6608-c855-49c6-b7c4-c2920e944d3e",
+              "name": "result",
+              "value": "skipped",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1780,
+        680
+      ],
+      "id": "3e1f002b-a987-48f0-b19e-b8af8bf18e1b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "rowIndex",
+        "joinMode": "keepEverything",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4660,
+        200
+      ],
+      "id": "da746b14-6289-48ec-b25f-df68a13c854f",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5af0c34f-45d7-4c87-a7b6-5d594f5e1ce9",
+              "name": "gpt1_response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "60297e33-eb2c-4d9e-8039-88258e998b4a",
+              "name": "threadId1",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2100,
+        40
+      ],
+      "id": "26e68c1c-c72d-43ac-ac95-6d8168d7fbea",
+      "name": "Attach GPT1 Response"
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_JPOAUj3LLQslWBrHeMAwb1If",
+          "mode": "id"
+        },
+        "prompt": "define",
+        "text": "={{ $json.prompt }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1760,
+        40
+      ],
+      "id": "4d08cf64-5ddb-42fd-b762-825aa090e157",
+      "name": "Message GPT1",
+      "credentials": {
+        "openAiApi": {
+          "id": "nPdgaXUobgEEyCDV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_CWczfGXVA3PaQU6TlsEy9zwl",
+          "mode": "id"
+        },
+        "prompt": "define",
+        "text": "={{ $json.gpt1_response }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2360,
+        40
+      ],
+      "id": "36c05085-de05-47ea-b617-b1d2d071dd06",
+      "name": "Message GPT2",
+      "credentials": {
+        "openAiApi": {
+          "id": "nPdgaXUobgEEyCDV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_RZkKgSoN6UTfP78PzIyCHr0v",
+          "mode": "id"
+        },
+        "prompt": "define",
+        "text": "={{ $json.gpt2_response }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        3060,
+        40
+      ],
+      "id": "365a4f2b-b5f2-4395-89fd-b65fd90cee4b",
+      "name": "Message GPT3",
+      "credentials": {
+        "openAiApi": {
+          "id": "nPdgaXUobgEEyCDV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "08e273b9-b28d-43b3-9929-e7af66b94295",
+              "name": "gpt2_response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "bf44bb94-6833-4d13-a1e8-b8dce2aa0583",
+              "name": "threadId2",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2760,
+        40
+      ],
+      "id": "e223d144-c409-4037-b74e-cd35456a3baa",
+      "name": "Attach GPT2 Response"
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_7Jf9KPlqpKJu125PSBjRVs6M",
+          "mode": "id"
+        },
+        "prompt": "define",
+        "text": "={{ $json.gpt3_response }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        3700,
+        40
+      ],
+      "id": "aceee7da-3bd1-4c95-bbaf-961437d522ff",
+      "name": "Message GPT4",
+      "credentials": {
+        "openAiApi": {
+          "id": "nPdgaXUobgEEyCDV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "08e273b9-b28d-43b3-9929-e7af66b94295",
+              "name": "gpt3_response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "8ce64435-46be-4d26-b352-f946aa3f2b55",
+              "name": "threadId3",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3440,
+        40
+      ],
+      "id": "f1e306e1-04a1-4229-8915-b11ca5411dcc",
+      "name": "Attach GPT3 Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "08e273b9-b28d-43b3-9929-e7af66b94295",
+              "name": "gpt4_response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "d4bd741c-15f0-4f03-9203-f66cba62fdda",
+              "name": "threadId4",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4100,
+        40
+      ],
+      "id": "b420b1cf-47f7-4b96-82d9-3ff292c61880",
+      "name": "Attach GPT4 Response"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        -40
+      ],
+      "id": "ff9b9a79-6dbd-48b3-aadc-49360bc4be6f",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "95cadeb6-0859-4be8-96c4-04bbb0977977",
+              "name": "H1",
+              "value": "={{ $('Loop through Rows,').item.json.H1 }}",
+              "type": "string"
+            },
+            {
+              "id": "756c9efc-8220-4bae-8a40-d4c341f2b292",
+              "name": "H2",
+              "value": "={{ $('Loop through Rows,').item.json.H2 }}",
+              "type": "string"
+            },
+            {
+              "id": "d391bad7-bbf3-468a-88c4-e237cb73ca70",
+              "name": "H3",
+              "value": "={{ $('Loop through Rows,').item.json.H3 }}",
+              "type": "string"
+            },
+            {
+              "id": "4f16ef15-0f3c-4622-95e3-05ba4122b923",
+              "name": "H4",
+              "value": "={{ $('Loop through Rows,').item.json.H4 }}",
+              "type": "string"
+            },
+            {
+              "id": "6dffd617-1094-4414-ae2f-a25ab8a15a03",
+              "name": "H5",
+              "value": "={{ $('Loop through Rows,').item.json.H5 }}",
+              "type": "string"
+            },
+            {
+              "id": "21345609-f29c-4383-8a3e-eed3e1024352",
+              "name": "H6",
+              "value": "={{ $('Loop through Rows,').item.json.H6 }}",
+              "type": "string"
+            },
+            {
+              "id": "9d13adf0-7ae1-4d9f-95b5-a333c133f55f",
+              "name": "CCTP",
+              "value": "={{ $('Loop through Rows,').item.json.CCTP }}",
+              "type": "string"
+            },
+            {
+              "id": "d2b41ebb-ab1e-4768-9e9e-626f34d7111c",
+              "name": "context",
+              "value": "={{ $('Loop through Rows,').item.json.context }}",
+              "type": "string"
+            },
+            {
+              "id": "3dc46e6f-3452-4a20-91c6-2c81494c1d0d",
+              "name": "prompt",
+              "value": "={{ $('Loop through Rows,').item.json.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "c74c79e6-3a2a-4ba9-b8a9-9905e554a6e3",
+              "name": "leafKey",
+              "value": "={{ $('Loop through Rows,').item.json.leafKey }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b09776-811d-4ef9-ac28-7dd268895814",
+              "name": "hasCCTP",
+              "value": "={{ $('Loop through Rows,').item.json.hasCCTP }}",
+              "type": "boolean"
+            },
+            {
+              "id": "39a2b7ad-682f-4338-b3db-440b6344040f",
+              "name": "rowIndex",
+              "value": "={{ $('Loop through Rows,').item.json.rowIndex }}",
+              "type": "number"
+            },
+            {
+              "id": "1e09d239-7c67-4d57-bef6-cf16f7f1a727",
+              "name": "gpt1_response",
+              "value": "={{ $('Attach GPT1 Response').item.json.gpt1_response }}",
+              "type": "string"
+            },
+            {
+              "id": "3d34bc02-0f73-4001-88ac-eff8d702676e",
+              "name": "threadId1",
+              "value": "={{ $('Attach GPT1 Response').item.json.threadId1 }}",
+              "type": "string"
+            },
+            {
+              "id": "5dad0228-b22f-48d4-9910-610ba03a8877",
+              "name": "gpt2_response",
+              "value": "={{ $('Attach GPT2 Response').item.json.gpt2_response }}",
+              "type": "string"
+            },
+            {
+              "id": "e551e51b-106f-4136-92c1-3092c2a43419",
+              "name": "threadId2",
+              "value": "={{ $('Attach GPT2 Response').item.json.threadId2 }}",
+              "type": "string"
+            },
+            {
+              "id": "a71bba82-6a18-4bfd-9e2e-1b87c9e21dc3",
+              "name": "gpt3_response",
+              "value": "={{ $('Attach GPT3 Response').item.json.gpt3_response }}",
+              "type": "string"
+            },
+            {
+              "id": "c3572e52-566d-4485-9270-7ec78b3e81b2",
+              "name": "threadId3",
+              "value": "={{ $('Attach GPT3 Response').item.json.threadId3 }}",
+              "type": "string"
+            },
+            {
+              "id": "497a0a04-05f2-403b-a909-1d86b2326084",
+              "name": "gpt4_response",
+              "value": "={{ $json.gpt4_response }}",
+              "type": "string"
+            },
+            {
+              "id": "2c03f673-389f-45ab-a863-d6b73b6740bc",
+              "name": "threadId4",
+              "value": "={{ $json.threadId4 }}",
+              "type": "string"
+            },
+            {
+              "id": "bde2e56f-4b59-4b1e-8824-b9f21979c91a",
+              "name": "result",
+              "value": "done",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4320,
+        40
+      ],
+      "id": "df9b7533-32a7-4b28-8624-35417c7c609e",
+      "name": "addResullt"
+    },
+    {
+      "parameters": {
+        "command": "python3 /data/scripts/xlsx_to_docx.py /data/files/File.xlsx /data/files/output.docx"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        -200
+      ],
+      "id": "9f1611f3-88e9-4f20-bc1d-8a352e00b91c",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/data/files/File.xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -200
+      ],
+      "id": "f62d70d6-c37c-4ef8-85c8-47dc5dda9e8d",
+      "name": "Read/Write Files from Disk2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop through Rows,",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop through Rows,": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message GPT1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Excel Output": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message GPT1": {
+      "main": [
+        [
+          {
+            "node": "Attach GPT1 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach GPT1 Response": {
+      "main": [
+        [
+          {
+            "node": "Message GPT2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message GPT2": {
+      "main": [
+        [
+          {
+            "node": "Attach GPT2 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach GPT2 Response": {
+      "main": [
+        [
+          {
+            "node": "Message GPT3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message GPT3": {
+      "main": [
+        [
+          {
+            "node": "Attach GPT3 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message GPT4": {
+      "main": [
+        [
+          {
+            "node": "Attach GPT4 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach GPT3 Response": {
+      "main": [
+        [
+          {
+            "node": "Message GPT4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach GPT4 Response": {
+      "main": [
+        [
+          {
+            "node": "addResullt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Write Excel Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "addResullt": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b12daecf-9908-41bd-b688-efcc57205aeb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b047e595e520b0241af595aa79dfdc28f73c2e460bae51fcf2cc2606eb6fdc0f"
+  },
+  "id": "hlj5x6MTouD7YwTC",
+  "tags": []
+}
