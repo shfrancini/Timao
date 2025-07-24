@@ -42,32 +42,36 @@ pip install -r requirements.txt
 
 ---
 
-## 📂 Folder Hierarchy & Required Files
+## 📂 Folder Hierarchy & Required Files / Structure des dossiers et fichiers requis
 
-To ensure the pipeline runs smoothly, maintain the following structure in your project root:
+To ensure the pipeline runs smoothly, maintain the following structure in your project root:  
+Pour que le pipeline fonctionne correctement, conservez la structure suivante à la racine de votre projet :
 
 ```
 Timao/
 ├── scripts/
-│   ├── docx_to_xlsx.py
-│   └── xlsx_to_docx.py
+│   ├── docx_to_xlsx.py                  ← script de conversion DOCX ➝ XLSX
+│   └── xlsx_to_docx.py                  ← script de reconversion XLSX ➝ DOCX
 ├── files/
-│   ├── source_input.docx           ← input Word file
-│   ├── output.xlsx                 ← generated from DOCX
-│   ├── enriched_output.xlsx        ← manually exported from n8n
-│   ├── final_output_test.docx      ← final result after reconversion
-├── tests/
-│   └── My workflow.json            ← the n8n automation
-├── requirements.txt
-├── README.md
-└── Dockerfile (optional)
+│   ├── source_input.docx                ← fichier Word source (entrée)
+│   ├── output.xlsx                      ← fichier Excel brut généré par le script
+│   ├── enriched_output.xlsx             ← fichier enrichi sauvegardé depuis n8n
+│   ├── final_output_test.docx           ← document final Word généré
+├── n8n_workflow.json                    ← fichier de workflow n8n à importer
+├── requirements.txt                     ← dépendances Python
+├── README.md                            ← ce fichier
+└── Dockerfile (facultatif)              ← pour exécution via conteneur Docker
 ```
 
-**Important notes:**
-- Input filename must be: `source_input.docx`
-- Output filenames used by the workflow: `output.xlsx`, `File.xlsx`, `output.docx`
-
----
+**Important notes / Notes importantes :**  
+- The input file must be named `source_input.docx`  
+  Le fichier source doit s'appeler `source_input.docx`
+- The workflow produces: `output.xlsx` ➝ `File.xlsx` ➝ `output.docx`  
+  Le workflow produit successivement : `output.xlsx` ➝ `File.xlsx` ➝ `output.docx`
+- The n8n workflow is saved in `n8n_workflow.json` at the root  
+  Le workflow n8n est enregistré dans `n8n_workflow.json` à la racine du projet
+- Respect this exact structure for the scripts and volume mounting to work  
+  Cette structure est nécessaire pour que les scripts et le montage Docker fonctionnent
 
 ## 🗐 Usage Process / Processus d'utilisation
 
