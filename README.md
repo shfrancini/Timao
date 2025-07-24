@@ -49,11 +49,11 @@ Timao/
 
 3. **Enrich `output.xlsx` using n8n**.
    - This process adds GPT outputs (columns like `gpt_summary`, `gpt_keywords`, etc.).
-   - Save the enriched file as `output.xlsx` (overwrite) or as a new file if preferred.
+   - Save the enriched file as a **new Excel file** (e.g., `enriched_output.xlsx`).
 
    **Enrichissez `output.xlsx` avec n8n**.
    - Ce processus ajoute les réponses GPT.
-   - Sauvegardez le fichier enrichi (écrasement ou nouveau nom).
+   - Sauvegardez le fichier enrichi sous un **nouveau nom** (ex : `enriched_output.xlsx`).
 
 4. **Convert back to DOCX** using the script `scripts/xlsx_to_docx.py`:
 
@@ -63,10 +63,27 @@ Timao/
      -v ~/Projects/Timao/files:/data/files \
      python:3.10 \
      /bin/bash -c "pip install -r /data/scripts/requirements.txt && \
-                   python3 /data/scripts/xlsx_to_docx.py /data/files/output.xlsx /data/files/final_output_test.docx"
+                   python3 /data/scripts/xlsx_to_docx.py /data/files/enriched_output.xlsx /data/files/final_output_test.docx"
    ```
 
    **Convertissez à nouveau en DOCX** avec le script `scripts/xlsx_to_docx.py`
+
+---
+
+## 🖥️ Running n8n locally / Exécuter n8n en local
+
+Install Docker and run n8n:
+
+```bash
+docker run -it --rm \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n
+```
+
+Open [http://localhost:5678](http://localhost:5678) in your browser.
+
+Import your workflows (from `tests/` or create new ones) to process the Excel files with GPT.
 
 ---
 
@@ -123,9 +140,9 @@ run.font.size = Pt(11)
 
 ## 💡 Example File Flow / Exemple de chemin de fichiers
 
-| File                     | Purpose                                   | Utilité                              |
-|--------------------------|--------------------------------------------|---------------------------------------|
-| `source_input.docx`      | Original input with numbered structure     | Fichier source                        |
-| `output.xlsx`            | Raw DOCX → XLSX conversion (not enriched) | Conversion Excel (non enrichi)       |
-| `output.xlsx` (enriched) | Enriched version with GPT via n8n         | Version enrichie avec GPT            |
-| `final_output_test.docx` | Final output after reintegration          | Résultat final                        |
+| File                     | Purpose                                        | Utilité                               |
+|--------------------------|------------------------------------------------|----------------------------------------|
+| `source_input.docx`      | Original input with numbered structure         | Fichier source                         |
+| `output.xlsx`            | Raw DOCX → XLSX conversion (not enriched)      | Conversion Excel (non enrichi)        |
+| `enriched_output.xlsx`   | Enriched version with GPT via n8n              | Version enrichie avec GPT             |
+| `final_output_test.docx` | Final output after reintegration               | Résultat final                         |
