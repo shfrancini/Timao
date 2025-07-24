@@ -1,10 +1,10 @@
 # Timao N8N Document Conversion Pipeline
 
-This repository contains scripts and instructions for converting structured Word (.docx) files into Excel (.xlsx) format, enriching them using n8n and GPT outputs, and converting the results back to a properly formatted .docx file.
+Ce dépôt contient des scripts et instructions pour convertir des fichiers Word structurés (.docx) en Excel (.xlsx), les enrichir avec n8n et GPT, puis les reconvertir en document .docx correctement formaté.
 
 ---
 
-## 🧱 Folder Structure
+## 🧱 Folder Structure / Structure des dossiers
 
 ```
 Timao/
@@ -24,10 +24,13 @@ Timao/
 
 ---
 
-## 🧭 Workflow Overview
+## 🧭 Workflow Overview / Vue d'ensemble du processus
 
 1. **Start with** a `.docx` file that uses numbered headings (e.g., 1, 1.1, 1.1.1, etc.).
    - Place this in `files/` and name it: `source_input.docx`
+   
+   **Commencez avec** un fichier `.docx` structuré avec des titres numérotés.
+   - Placez-le dans `files/` sous le nom `source_input.docx`
 
 2. **Convert to Excel** using the script `scripts/docx_to_xlsx.py`:
 
@@ -40,9 +43,15 @@ Timao/
                    python3 /data/scripts/docx_to_xlsx.py /data/files/source_input.docx /data/files/output.xlsx"
    ```
 
+   **Convertissez en Excel** avec le script `scripts/docx_to_xlsx.py`
+
 3. **Enrich `output.xlsx` using n8n**.
    - This process adds GPT outputs (columns like `gpt_summary`, `gpt_keywords`, etc.).
    - Export the enriched result, overwriting or renaming as needed (e.g. same `output.xlsx`).
+
+   **Enrichissez `output.xlsx` avec n8n**.
+   - Ce processus ajoute les réponses GPT.
+   - Exportez le fichier enrichi (en écrasant ou renommant).
 
 4. **Convert back to DOCX** using the script `scripts/xlsx_to_docx.py`:
 
@@ -55,47 +64,46 @@ Timao/
                    python3 /data/scripts/xlsx_to_docx.py /data/files/output.xlsx /data/files/output.docx"
    ```
 
+   **Convertissez à nouveau en DOCX** avec le script `scripts/xlsx_to_docx.py`
+
 ---
 
-## 🔧 Required Python Packages
-These are defined in `requirements.txt`:
+## 🔧 Required Python Packages / Dépendances Python
 
 ```
 openpyxl
 python-docx
 ```
 
-To manually install in a local environment:
+To manually install:
+```bash
+pip install -r requirements.txt
+```
+
+Pour une installation manuelle :
 ```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 🧠 GPT Agent Customization
+## 🧠 GPT Agent Customization / Personnalisation des réponses GPT
 
-To change how GPT responses appear under each `CCTP` block:
+To change how GPT responses appear:
 
-### 🔧 Modify the GPT prompt in your assistant (used in n8n):
-Example prompt:
+### 🔧 Modify the GPT prompt in your assistant (n8n):
+
 ```text
 Format your response with:
 - A bold heading
 - Bulleted list
 - Formal tone
 ```
-You can change it to include:
-- Numbered lists
-- Markdown headers
-- Specific phrase markers
 
-### 🎨 Modify how GPT outputs are styled in `xlsx_to_docx.py`:
+Change to use numbered list, markdown, etc.
 
-Edit the block:
-```python
-para = doc.add_paragraph(str(response))
-```
-Add logic to format the font, spacing, or layout using `python-docx`, e.g.:
+### 🎨 Modify output formatting in `xlsx_to_docx.py`:
+
 ```python
 run.font.bold = True
 run.font.size = Pt(11)
@@ -105,18 +113,17 @@ run.font.size = Pt(11)
 
 ## 📌 Notes
 
-- Only rows with a non-empty `CCTP` field are processed for GPT outputs.
-- The numbering logic mimics the original `source_input.docx`, maintaining continuity like `1`, `1.1`, `1.1.1` throughout.
-- GPT outputs are inserted **under** the `CCTP` paragraph for each section.
-- You can customize output styles in `xlsx_to_docx.py` if needed.
+- Only rows with `CCTP` are processed.
+- Numbering follows the logical order of `source_input.docx`.
+- GPT responses are inserted under the `CCTP`.
 
 ---
 
-## 💡 Example File Flow
+## 💡 Example File Flow / Exemple de chemin de fichiers
 
-| File                     | Purpose                               |
-|--------------------------|----------------------------------------|
-| `source_input.docx`      | Original input file (to convert)       |
-| `output.xlsx`            | Output from DOCX→XLSX conversion       |
-| `output.xlsx` (enriched) | Updated in n8n with GPT responses      |
-| `output.docx`            | Final formatted DOCX output            |
+| File                     | Purpose                               | Utilité                              |
+|--------------------------|----------------------------------------|---------------------------------------|
+| `source_input.docx`      | Original input file                    | Fichier source                        |
+| `output.xlsx`            | After DOCX → XLSX                      | Conversion Excel                      |
+| `output.xlsx` (enriched) | With GPT outputs via n8n              | Enrichi avec GPT                     |
+| `output.docx`            | Final DOCX result                      | Fichier final                          |
