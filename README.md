@@ -9,12 +9,20 @@ Ce dépôt contient des scripts et instructions pour convertir un document Word 
 ## ✅ Full Setup from Scratch / Configuration complète depuis zéro
 
 ### 1. 🔁 Clone the repository / Cloner le dépôt
-If you don’t already have the code:
 
+#### Option A – With Git / Avec Git
+If you have Git installed, run:
 ```bash
 git clone https://github.com/shfrancini/Timao.git
 cd Timao
 ```
+
+#### Option B – Without Git / Sans Git
+If you don’t have Git:
+1. Go to [https://github.com/shfrancini/Timao](https://github.com/shfrancini/Timao)
+2. Click the green **"Code"** button
+3. Choose **"Download ZIP"**
+4. Extract the ZIP and open the `Timao` folder
 
 ### 2. 🐳 Install Docker / Installer Docker
 Download Docker Desktop: https://www.docker.com/products/docker-desktop  
