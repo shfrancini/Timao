@@ -134,6 +134,30 @@ pip install -r requirements.txt
 
 ---
 
+
+## 🐳 Run the Conversion Script via Docker Only / Exécuter le script via Docker uniquement
+
+All required Python libraries are automatically installed inside the Docker container.  
+You do **not** need to install Python or dependencies manually on your machine.
+
+### ▶️ Run this from the root of the repo:
+
+```bash
+docker run --rm \
+  -v $(pwd)/scripts:/data/scripts \
+  -v $(pwd)/files:/data/files \
+  python:3.10 \
+  /bin/bash -c "pip install openpyxl python-docx && \
+                python3 /data/scripts/xlsx_to_docx.py /data/files/gpt_output.xlsx /data/files/output.docx"
+```
+
+This command:
+- Mounts your local `scripts/` and `files/` folders inside the Docker container
+- Installs required libraries (`openpyxl`, `python-docx`)
+- Runs the script that converts `gpt_output.xlsx` into `output.docx`
+
+---
+
 ## 🧠 GPT Prompt Customization / Personnalisation du prompt GPT
 
 Modify the prompt directly in the n8n node where GPT is called.
