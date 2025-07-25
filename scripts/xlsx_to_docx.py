@@ -34,13 +34,14 @@ def main(input_xlsx, output_docx):
     gpt_cols = [h for h in headers if h and "gpt" in h.lower()]
     cctp_col = headers.index("CCTP") if "CCTP" in headers else None
 
+    if cctp_col is None:
+        print("❌ 'CCTP' column not found.")
+        sys.exit(1)
+
     doc = Document()
     previous_path = []
 
     for row in rows:
-        if cctp_col is None or not row[cctp_col]:
-            continue
-
         current_labels = [row[headers.index(h)] for h in hierarchy_cols]
         numbering_path = compute_numbering_path(previous_path, current_labels)
         previous_path = numbering_path
@@ -52,11 +53,11 @@ def main(input_xlsx, output_docx):
             numbered_title = f"{format_numbering_path(numbering_path[:level])} {label}"
             doc.add_heading(numbered_title, level=level)
 
-        # Add CCTP content before GPT responses
-        cctp_text = str(row[cctp_col]).strip()
-        if cctp_text:
+        # Add CCTP content only if it exists
+        cctp_value = row[cctp_col]
+        if cctp_value and str(cctp_value).strip():
             doc.add_paragraph("**CCTP**", style="Intense Quote")
-            para = doc.add_paragraph(cctp_text)
+            para = doc.add_paragraph(str(cctp_value).strip())
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             run = para.runs[0]
             run.font.name = 'Arial'
