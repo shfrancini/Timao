@@ -73,7 +73,7 @@ def filter_leaf_paths_with_cctp(rows):
 
 def write_rows_with_cctp_to_excel(rows, output_file):
     if not rows:
-        raise ValueError("⚠️ No valid hierarchy items found.")
+        raise ValueError("No valid hierarchy items found.")
 
     max_depth = max(len(row) for row, _ in rows)
     wb = openpyxl.Workbook()
@@ -87,12 +87,12 @@ def write_rows_with_cctp_to_excel(rows, output_file):
         ws.append(row + [cctp])
 
     wb.save(output_file)
-    print(f"✅ Excel file saved as: {output_file}")
+    print(f"Excel file saved as: {output_file}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("❌ Usage: python3 docx_to_xlsx.py <input.docx> <output.xlsx>")
+        print("Usage: python3 docx_to_xlsx.py <input.docx> <output.xlsx>")
         sys.exit(1)
 
     docx_file = sys.argv[1]
