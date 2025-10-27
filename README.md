@@ -6,9 +6,9 @@ Ce dépôt contient des scripts et instructions pour convertir un document Word 
 
 ---
 
-## ✅ Full Setup from Scratch / Configuration complète depuis zéro
+## Full Setup from Scratch / Configuration complète depuis zéro
 
-### 1. 🔁 Clone the repository / Cloner le dépôt
+### 1. Clone the repository / Cloner le dépôt
 
 #### Option A – With Git / Avec Git
 If you have Git installed, run:
@@ -24,17 +24,17 @@ If you don’t have Git:
 3. Choose **"Download ZIP"**
 4. Extract the ZIP and open the `Timao` folder
 
-### 2. 🐳 Install Docker & Create Account / Installer Docker et créer un compte
+### 2. Install Docker & Create Account / Installer Docker et créer un compte
 
 #### Step 1 – Install Docker Desktop / Installer Docker Desktop
 Download and install Docker Desktop:  
 Téléchargez et installez Docker Desktop :  
-👉 https://www.docker.com/products/docker-desktop
+https://www.docker.com/products/docker-desktop
 
 #### Step 2 – Create a Docker account / Créer un compte Docker
 Before running any Docker commands, you must **create a free Docker account**:  
 Avant d'exécuter des commandes Docker, vous devez **créer un compte Docker gratuit** :  
-👉 https://hub.docker.com/signup
+https://hub.docker.com/signup
 
 Once your account is created and Docker is running, continue with the next steps.  
 Une fois votre compte créé et Docker lancé, poursuivez les étapes suivantes.
@@ -121,7 +121,7 @@ Une fois le workflow importé dans n8n :
 
 ---
 
-## 🔧 Requirements / Prérequis
+## Requirements / Prérequis
 
 ### Python (if running manually) / Python (si vous exécutez les scripts à la main)
 Make sure you have Python 3.9+ installed.  
@@ -135,12 +135,12 @@ pip install -r requirements.txt
 ---
 
 
-## 🐳 Run the Conversion Script via Docker Only / Exécuter le script via Docker uniquement
+## Run the Conversion Script via Docker Only / Exécuter le script via Docker uniquement
 
 All required Python libraries are automatically installed inside the Docker container.  
 You do **not** need to install Python or dependencies manually on your machine.
 
-### ▶️ Run this from the root of the repo:
+### Run this from the root of the repo:
 
 ```bash
 docker run --rm \
@@ -158,7 +158,7 @@ This command:
 
 ---
 
-## 🧠 GPT Prompt Customization / Personnalisation du prompt GPT
+## GPT Prompt Customization / Personnalisation du prompt GPT
 
 Modify the prompt directly in the n8n node where GPT is called.
 
@@ -176,7 +176,7 @@ Vous pouvez modifier le prompt directement dans le nœud OpenAI de n8n.
 
 ---
 
-## 📌 File Summary / Récapitulatif des fichiers
+## File Summary / Récapitulatif des fichiers
 
 | File / Fichier        | Role / Rôle                                               |
 |-----------------------|-----------------------------------------------------------|
@@ -187,7 +187,7 @@ Vous pouvez modifier le prompt directement dans le nœud OpenAI de n8n.
 
 ---
 
-## ⚠️ Notes
+## Notes
 
 - File names **must match exactly**  
 - GPT enrichment works only if `context` and `prompt` columns are present  
