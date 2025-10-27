@@ -35,7 +35,7 @@ def main(input_xlsx, output_docx):
     cctp_col = headers.index("CCTP") if "CCTP" in headers else None
 
     if cctp_col is None:
-        print("❌ 'CCTP' column not found.")
+        print(" 'CCTP' column not found.")
         sys.exit(1)
 
     doc = Document()
@@ -77,12 +77,12 @@ def main(input_xlsx, output_docx):
         doc.add_paragraph("")
 
     doc.save(output_docx)
-    print(f"✅ DOCX saved to {output_docx}")
+    print(f"DOCX saved to {output_docx}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("❌ Usage: python3 xlsx_to_docx.py input.xlsx output.docx")
+        print("Usage: python3 xlsx_to_docx.py input.xlsx output.docx")
         sys.exit(1)
 
     input_file = sys.argv[1]
