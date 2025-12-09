@@ -2,7 +2,7 @@
 
 This repository contains scripts and instructions to convert a structured Word document (.docx) into Excel (.xlsx), enrich it using GPT via n8n, then regenerate a formatted Word document.
 
-Ce dépôt contient des scripts et instructions pour convertir un document Word structuré (.docx) en Excel (.xlsx), l’enrichir avec GPT via n8n, puis le retransformer en document Word mis en forme.
+Ce dépôt contient des scripts et instructions pour convertir un document Word structuré (.docx) en Excel (.xlsx), l'enrichir avec GPT via n8n, puis le retransformer en document Word mis en forme.
 
 ---
 
@@ -18,7 +18,7 @@ cd Timao
 ```
 
 #### Option B – Without Git / Sans Git
-If you don’t have Git:
+If you don't have Git:
 1. Go to [https://github.com/shfrancini/Timao](https://github.com/shfrancini/Timao)
 2. Click the green **"Code"** button
 3. Choose **"Download ZIP"**
@@ -27,16 +27,16 @@ If you don’t have Git:
 ### 2. Install Docker & Create Account / Installer Docker et créer un compte
 
 #### Step 1 – Install Docker Desktop / Installer Docker Desktop
-Download and install Docker Desktop:  
-Téléchargez et installez Docker Desktop :  
+Download and install Docker Desktop:
+Téléchargez et installez Docker Desktop :
 https://www.docker.com/products/docker-desktop
 
 #### Step 2 – Create a Docker account / Créer un compte Docker
-Before running any Docker commands, you must **create a free Docker account**:  
-Avant d'exécuter des commandes Docker, vous devez **créer un compte Docker gratuit** :  
+Before running any Docker commands, you must **create a free Docker account**:
+Avant d'exécuter des commandes Docker, vous devez **créer un compte Docker gratuit** :
 https://hub.docker.com/signup
 
-Once your account is created and Docker is running, continue with the next steps.  
+Once your account is created and Docker is running, continue with the next steps.
 Une fois votre compte créé et Docker lancé, poursuivez les étapes suivantes.
 
 ### 3. 🚀 Launch n8n locally / Lancer n8n en local
@@ -49,27 +49,27 @@ docker run -it --rm \
   n8nio/n8n
 ```
 
-Open your browser and go to http://localhost:5678  
-Ouvrez votre navigateur et allez à l’adresse http://localhost:5678
+Open your browser and go to http://localhost:5678
+Ouvrez votre navigateur et allez à l'adresse http://localhost:5678
 
 Sign in / create an n8n account.
 Connectez-vous / créez un compte n8n.
 
 ### 4. 📥 Import the n8n workflow / Importer le workflow n8n
-- In the n8n interface → click “Workflows” → “Import from file”
+- In the n8n interface → click "Workflows" → "Import from file"
 - File to import: `n8n_workflow.json`
 
-Dans l’interface n8n → cliquez sur “Workflows” → “Import from file”  
+Dans l'interface n8n → cliquez sur "Workflows" → "Import from file"
 Fichier à importer : `n8n_workflow.json`
 
-Configure your credentials (OpenAI, Google Drive, Pinecone, etc.) in the “Credentials” section.  
-Configurez vos identifiants (OpenAI, Google Drive, Pinecone, etc.) dans la section “Credentials”.
+Configure your credentials (OpenAI, Google Drive, Pinecone, etc.) in the "Credentials" section.
+Configurez vos identifiants (OpenAI, Google Drive, Pinecone, etc.) dans la section "Credentials".
 
 ---
 
 ## 📂 Folder Structure & Required Files / Structure des dossiers et fichiers requis
 
-Maintain this structure in the root of your project:  
+Maintain this structure in the root of your project:
 Gardez cette structure à la racine du projet :
 
 ```
@@ -90,13 +90,13 @@ Timao/
 
 ---
 
-## 🗐 Step-by-Step Usage / Étapes d’utilisation
+## 🗐 Step-by-Step Usage / Étapes d'utilisation
 
 ### 1. Prepare your Word document / Préparez votre document Word
 
-- Place it in the `files/` folder  
-- Name it `input.docx`  
-- Use structured headings like `1`, `1.1`, `1.1.1`  
+- Place it in the `files/` folder
+- Name it `input.docx`
+- Use structured headings like `1`, `1.1`, `1.1.1`
 
 Déposez le document dans le dossier `files/`, nommé `input.docx`, en utilisant une structure de titres hiérarchiques.
 
@@ -124,8 +124,8 @@ Une fois le workflow importé dans n8n :
 ## Requirements / Prérequis
 
 ### Python (if running manually) / Python (si vous exécutez les scripts à la main)
-Make sure you have Python 3.9+ installed.  
-Assurez-vous d’avoir Python 3.9+ installé.
+Make sure you have Python 3.9+ installed.
+Assurez-vous d'avoir Python 3.9+ installé.
 
 Install dependencies:
 ```bash
@@ -137,7 +137,7 @@ pip install -r requirements.txt
 
 ## Run the Conversion Script via Docker Only / Exécuter le script via Docker uniquement
 
-All required Python libraries are automatically installed inside the Docker container.  
+All required Python libraries are automatically installed inside the Docker container.
 You do **not** need to install Python or dependencies manually on your machine.
 
 ### Run this from the root of the repo:
@@ -180,7 +180,7 @@ Vous pouvez modifier le prompt directement dans le nœud OpenAI de n8n.
 
 | File / Fichier        | Role / Rôle                                               |
 |-----------------------|-----------------------------------------------------------|
-| `input.docx`          | Original Word file / Fichier Word d’origine              |
+| `input.docx`          | Original Word file / Fichier Word d'origine              |
 | `int_output.xlsx`     | Extracted content / Contenu extrait                      |
 | `gpt_output.xlsx`     | GPT-enriched Excel / Fichier enrichi par GPT             |
 | `output.docx`         | Final formatted Word doc / Document Word final formaté   |
@@ -189,10 +189,86 @@ Vous pouvez modifier le prompt directement dans le nœud OpenAI de n8n.
 
 ## Notes
 
-- File names **must match exactly**  
-- GPT enrichment works only if `context` and `prompt` columns are present  
-- Heading structure in Word is required for section mapping  
+- File names **must match exactly**
+- GPT enrichment works only if `context` and `prompt` columns are present
+- Heading structure in Word is required for section mapping
 - Use consistent folder structure for Docker volume access
 
-Les noms de fichiers doivent correspondre exactement.  
+Les noms de fichiers doivent correspondre exactement.
 La structure des titres est essentielle pour que la conversion fonctionne correctement.
+
+---
+
+## N8N Workflow Details
+
+### Overview
+
+The n8n workflow automates the process of reading an Excel file, extracting structured data, and processing each row through OpenAI's API to generate AI-powered analysis based on contextual information.
+
+### Workflow Components
+
+#### 1. Webhook Trigger
+- **Node**: Webhook (POST)
+- **Path**: `db535c1e-ca83-4747-9155-2369e8af41de`
+- Receives incoming requests to trigger the workflow
+
+#### 2. File Extraction
+- **Node**: Extract from File
+- **Operation**: xlsx
+- Extracts data from the Excel file received via webhook
+
+#### 3. Batch Processing
+- **Node**: Loop Over Items (Split in Batches)
+- Processes Excel rows one at a time in a loop
+
+#### 4. Row Processing Logic
+- **Node**: Loop through Rows (Code)
+- **Function**: JavaScript code that:
+  - Identifies all columns in each row
+  - Uses the last column as "CCTP" (content column)
+  - Concatenates all preceding columns as hierarchical context (e.g., "Header1 > Header2 > Header3")
+  - Builds a formatted prompt for AI analysis
+  - Outputs: original row data + context + prompt
+
+#### 5. AI Analysis
+- **Node**: HTTP Request
+- **Method**: POST
+- **Endpoint**: OpenAI Chat Completions API
+- Sends the formatted prompt to OpenAI and receives analysis
+
+#### 6. File Reader (Alternative Trigger)
+- **Node**: Read/Write Files from Disk
+- **Path**: `/Downloads/structured_output.xlsx`
+- Alternative way to load files from local disk
+
+#### 7. Manual Trigger
+- **Node**: When clicking 'Execute workflow'
+- Allows manual execution for testing
+
+### Data Flow
+
+```
+Webhook → Extract from File → Loop Over Items → Loop through Rows → HTTP Request (OpenAI) → Loop Over Items
+```
+
+### N8N Configuration
+
+#### OpenAI API Setup
+You'll need to configure the HTTP Request node with:
+- OpenAI API key in headers
+- Request body with model and messages
+- Proper authentication headers
+
+#### File Path
+Update the file path in "Read/Write Files from Disk1" node if reading from local disk:
+```json
+"fileSelector": "/Downloads/structured_output.xlsx"
+```
+
+### Workflow Notes
+
+- The workflow expects Excel files with multiple columns
+- The rightmost column is treated as the main content (CCTP)
+- All other columns provide hierarchical context
+- Empty cells are automatically filtered out from context
+- Processing happens sequentially, one row at a time
